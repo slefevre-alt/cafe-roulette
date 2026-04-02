@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roulette Café — FBD</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:    #1a1a2e;
+    --cream:  #f7f3ee;
+    --warm:   #f0e8dc;
+    --coffee: #6b3f1f;
+    --caramel:#c07830;
+    --foam:   #e8d5b7;
+    --sage:   #4a6741;
+    --rust:   #9b3a2a;
+    --mist:   #e8edf2;
+    --radius: 16px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(192,120,48,.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 90% 80%, rgba(107,63,31,.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── HEADER ── */
+  header { text-align: center; margin-bottom: 52px; }
+  .logo-cup { font-size: 40px; display: block; margin-bottom: 12px; animation: steam 3s ease-in-out infinite; }
+  @keyframes steam {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-6px) rotate(2deg); }
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    color: var(--coffee);
+  }
+  header p {
+    margin-top: 8px;
+    font-size: .95rem;
+    font-weight: 300;
+    color: #7a6a5a;
+    letter-spacing: .03em;
+  }
+  .divider {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--caramel), transparent);
+    margin: 20px auto 0;
+  }
+
+  /* ── SECTIONS ── */
+  section { margin-bottom: 36px; }
+  .section-label {
+    font-size: .72rem; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--caramel);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--foam), transparent);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid var(--foam);
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(107,63,31,.06);
+  }
+
+  /* ── ARRIVANT SELECTOR ── */
+  .arrivant-bar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .arrivant-bar label { font-size: .85rem; font-weight: 500; white-space: nowrap; }
+  .arrivant-bar select {
+    flex: 1; min-width: 180px;
+    border: 1.5px solid var(--foam);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    background: var(--cream);
+    color: var(--ink);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c07830' fill='none' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .arrivant-bar select:focus { outline: none; border-color: var(--caramel); }
+
+  .phase-badge {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: .78rem; font-weight: 500; letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .phase-1 { background: #dbeafe; color: #1e40af; }
+  .phase-2 { background: #dcfce7; color: #166534; }
+  .phase-3 { background: #f3e8ff; color: #6b21a8; }
+
+  /* ── SPIN BUTTON ── */
+  .spin-wrap { text-align: center; padding: 8px 0 4px; }
+
+  .btn-spin {
+    position: relative; overflow: hidden;
+    background: var(--coffee);
+    color: #fff;
+    border: none; border-radius: 14px;
+    padding: 18px 48px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .01em;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 20px rgba(107,63,31,.25);
+  }
+  .btn-spin:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(107,63,31,.3); }
+  .btn-spin:active { transform: translateY(0); }
+  .btn-spin::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+  }
+  .btn-spin .icon { margin-right: 10px; }
+
+  .freq-note {
+    margin-top: 10px;
+    font-size: .78rem; color: #9a8878; text-align: center;
+  }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    background: linear-gradient(135deg, var(--coffee) 0%, #3d2010 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    color: #fff;
+    position: relative; overflow: hidden;
+    transition: opacity .4s, transform .4s;
+  }
+  .result-card.hidden { opacity: 0; transform: translateY(16px); pointer-events: none; }
+  .result-card::before {
+    content: '☕';
+    position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+    font-size: 72px; opacity: .08;
+  }
+  .result-card .result-label {
+    font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--foam); font-weight: 500; margin-bottom: 6px;
+  }
+  .result-card .result-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .result-card .result-meta {
+    font-size: .88rem; color: var(--foam); font-weight: 300;
+  }
+  .result-card .result-for {
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.15);
+    font-size: .85rem; color: var(--foam);
+  }
+  .result-card .result-for strong { color: #fff; }
+
+  /* ── SPINNING ANIMATION ── */
+  @keyframes spin-names {
+    0%   { transform: translateY(0);    opacity: 1; }
+    40%  { transform: translateY(-20px); opacity: 0; }
+    60%  { transform: translateY(20px);  opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+  .spinning .result-name { animation: spin-names .5s ease-in-out; }
+
+  /* ── MESSAGE BOX ── */
+  .msg-box {
+    background: var(--warm);
+    border-radius: 12px;
+    border-left: 4px solid var(--caramel);
+    padding: 18px 20px;
+    font-size: .88rem;
+    line-height: 1.7;
+    color: #4a3a2a;
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity .3s;
+  }
+  .msg-box.hidden { opacity: 0; }
+
+  .copy-btn {
+    margin-top: 12px;
+    background: transparent;
+    border: 1.5px solid var(--caramel);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .82rem; font-weight: 500;
+    color: var(--caramel);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .copy-btn:hover { background: var(--caramel); color: #fff; }
+  .copy-btn.copied { background: var(--sage); border-color: var(--sage); color: #fff; }
+
+  /* ── HISTORIQUE ── */
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--cream);
+    border: 1px solid var(--foam);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: .85rem;
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .history-item .hi-arrow { color: var(--caramel); font-size: 1rem; flex-shrink: 0; }
+  .history-item .hi-names { flex: 1; }
+  .history-item .hi-arrivant { font-weight: 500; color: var(--ink); }
+  .history-item .hi-collab  { color: #7a6a5a; font-size: .82rem; }
+  .history-item .hi-date    { font-size: .75rem; color: #aaa; white-space: nowrap; }
+  .history-item .hi-phase   { padding: 3px 10px; border-radius: 12px; font-size: .72rem; font-weight: 500; }
+
+  .empty-history {
+    text-align: center; padding: 28px;
+    color: #b0a090; font-size: .88rem; font-style: italic;
+  }
+
+  /* ── COLLAB LIST ── */
+  .collab-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+  .collab-chip {
+    background: var(--cream);
+    border: 1px solid var(--foam);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: .82rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .collab-chip .chip-name { font-weight: 500; }
+  .collab-chip .chip-dept { font-size: .75rem; color: #9a8878; }
+  .collab-chip button {
+    background: none; border: none; cursor: pointer;
+    color: #ccc; font-size: .85rem; padding: 2px 4px;
+    border-radius: 4px; transition: color .15s;
+  }
+  .collab-chip button:hover { color: var(--rust); }
+
+  .add-collab { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .add-collab input {
+    flex: 1; min-width: 120px;
+    border: 1.5px solid var(--foam); border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem;
+    background: var(--cream); color: var(--ink);
+    transition: border-color .2s;
+  }
+  .add-collab input:focus { outline: none; border-color: var(--caramel); }
+  .add-collab select {
+    border: 1.5px solid var(--foam); border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem;
+    background: var(--cream); color: var(--ink);
+    cursor: pointer;
+  }
+  .btn-add {
+    background: var(--caramel); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-add:hover { background: var(--coffee); }
+
+  /* ── ARRIVANT MANAGER ── */
+  .arrivant-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .arrivant-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--cream); border: 1px solid var(--foam);
+    border-radius: 8px; padding: 10px 14px; font-size: .85rem;
+  }
+  .arrivant-item .ai-name { flex: 1; font-weight: 500; }
+  .arrivant-item select {
+    border: 1px solid var(--foam); border-radius: 6px;
+    padding: 4px 8px; font-family: 'DM Sans', sans-serif; font-size: .78rem;
+    background: #fff; cursor: pointer;
+  }
+  .arrivant-item button {
+    background: none; border: none; cursor: pointer;
+    color: #ccc; font-size: .85rem; padding: 2px 4px;
+    transition: color .15s;
+  }
+  .arrivant-item button:hover { color: var(--rust); }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--foam); border-radius: 12px; padding: 4px; }
+  .tab {
+    flex: 1; text-align: center;
+    padding: 10px 12px; border-radius: 9px;
+    font-size: .85rem; font-weight: 500;
+    cursor: pointer; border: none; background: transparent;
+    color: #9a8878; transition: all .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { background: #fff; color: var(--coffee); box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: #fff;
+    padding: 12px 24px; border-radius: 10px;
+    font-size: .88rem; font-weight: 500;
+    transition: transform .3s ease, opacity .3s;
+    opacity: 0; z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 16px 60px; }
+    .btn-spin { padding: 16px 32px; font-size: 1rem; }
+    .result-card .result-name { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <span class="logo-cup">☕</span>
+    <h1>Roulette Café FBD</h1>
+    <p>Un tirage, un café, un lien créé</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('roulette')">Roulette</button>
+    <button class="tab" onclick="showTab('collaborateurs')">Collaborateurs</button>
+    <button class="tab" onclick="showTab('arrivants')">Arrivants</button>
+    <button class="tab" onclick="showTab('historique')">Historique</button>
+  </div>
+
+  <!-- TAB: ROULETTE -->
+  <div class="tab-panel active" id="tab-roulette">
+
+    <section>
+      <div class="section-label">Nouvel arrivant</div>
+      <div class="card">
+        <div class="arrivant-bar">
+          <label>Pour :</label>
+          <select id="select-arrivant" onchange="updatePhase()">
+            <option value="">— Sélectionner un arrivant —</option>
+          </select>
+          <span class="phase-badge" id="phase-badge" style="display:none"></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Tirage</div>
+      <div class="card">
+        <div class="spin-wrap">
+          <button class="btn-spin" onclick="lancerRoulette()">
+            <span class="icon">✦</span> Tirer au sort
+          </button>
+          <div class="freq-note" id="freq-note">Sélectionne un arrivant pour commencer</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result-section" style="display:none">
+      <div class="section-label">Résultat du tirage</div>
+      <div class="result-card" id="result-card">
+        <div class="result-label">Collaborateur désigné</div>
+        <div class="result-name" id="result-name">—</div>
+        <div class="result-meta" id="result-meta"></div>
+        <div class="result-for" id="result-for"></div>
+      </div>
+    </section>
+
+    <section id="msg-section" style="display:none">
+      <div class="section-label">Message prêt à envoyer sur Workvivo</div>
+      <div class="card">
+        <div class="msg-box" id="msg-box"></div>
+        <button class="copy-btn" id="copy-btn" onclick="copyMsg()">
+          <span>⎘</span> Copier le message
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- TAB: COLLABORATEURS -->
+  <div class="tab-panel" id="tab-collaborateurs">
+    <section>
+      <div class="section-label">Ajouter un collaborateur</div>
+      <div class="card">
+        <div class="add-collab">
+          <input type="text" id="inp-nom"    placeholder="Nom" />
+          <input type="text" id="inp-prenom" placeholder="Prénom" />
+          <input type="text" id="inp-dept"   placeholder="Département" />
+          <select id="inp-site">
+            <option value="Roissy">Roissy</option>
+            <option value="Quimper">Quimper</option>
+            <option value="Autre">Autre</option>
+          </select>
+          <button class="btn-add" onclick="addCollab()">Ajouter</button>
+        </div>
+        <div class="collab-grid" id="collab-grid"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB: ARRIVANTS -->
+  <div class="tab-panel" id="tab-arrivants">
+    <section>
+      <div class="section-label">Gérer les arrivants</div>
+      <div class="card">
+        <div class="add-collab">
+          <input type="text" id="inp-arr-nom"    placeholder="Nom" />
+          <input type="text" id="inp-arr-prenom" placeholder="Prénom" />
+          <select id="inp-arr-phase">
+            <option value="Phase 1">Phase 1</option>
+            <option value="Phase 2">Phase 2</option>
+            <option value="Phase 3">Phase 3</option>
+          </select>
+          <button class="btn-add" onclick="addArrivant()">Ajouter</button>
+        </div>
+        <div class="arrivant-list" id="arrivant-list"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB: HISTORIQUE -->
+  <div class="tab-panel" id="tab-historique">
+    <section>
+      <div class="section-label">Historique des tirages</div>
+      <div class="card">
+        <div class="history-list" id="history-list">
+          <div class="empty-history">Aucun tirage effectué pour l'instant.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  collaborateurs: [
+    { id: 1, nom: "Martin",   prenom: "Sophie",   dept: "Marketing",        site: "Roissy"   },
+    { id: 2, nom: "Dupont",   prenom: "Thomas",   dept: "RH",               site: "Quimper"  },
+    { id: 3, nom: "Leroy",    prenom: "Julie",    dept: "Formation",        site: "Roissy"   },
+    { id: 4, nom: "Bernard",  prenom: "Marc",     dept: "DSI",              site: "Roissy"   },
+    { id: 5, nom: "Petit",    prenom: "Claire",   dept: "Finance",          site: "Quimper"  },
+    { id: 6, nom: "Moreau",   prenom: "Antoine",  dept: "Com interne",      site: "Roissy"   },
+    { id: 7, nom: "Simon",    prenom: "Isabelle", dept: "Juridique",        site: "Quimper"  },
+    { id: 8, nom: "Laurent",  prenom: "Kevin",    dept: "Développement RH", site: "Roissy"   },
+    { id: 9, nom: "Michel",   prenom: "Sandrine", dept: "Marketing",        site: "Quimper"  },
+    { id:10, nom: "Garcia",   prenom: "Pierre",   dept: "DSI",              site: "Roissy"   },
+  ],
+  arrivants: [
+    { id: 1, nom: "Nouveau", prenom: "Prénom", phase: "Phase 1" }
+  ],
+  historique: [],
+  nextId: 11,
+  nextArrId: 2,
+};
+
+const FREQ = {
+  "Phase 1": "Fréquence recommandée : chaque semaine",
+  "Phase 2": "Fréquence recommandée : toutes les 2 semaines",
+  "Phase 3": "Fréquence recommandée : une fois par mois",
+};
+const PHASE_CSS = { "Phase 1": "phase-1", "Phase 2": "phase-2", "Phase 3": "phase-3" };
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab')[['roulette','collaborateurs','arrivants','historique'].indexOf(id)].classList.add('active');
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderArrivantSelect();
+  renderCollabGrid();
+  renderArrivantList();
+  renderHistorique();
+}
+
+function renderArrivantSelect() {
+  const sel = document.getElementById('select-arrivant');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Sélectionner un arrivant —</option>';
+  state.arrivants.forEach(a => {
+    const o = document.createElement('option');
+    o.value = a.id;
+    o.textContent = a.prenom + ' ' + a.nom;
+    sel.appendChild(o);
+  });
+  if (cur) sel.value = cur;
+  updatePhase();
+}
+
+function updatePhase() {
+  const sel = document.getElementById('select-arrivant');
+  const badge = document.getElementById('phase-badge');
+  const note  = document.getElementById('freq-note');
+  const a = state.arrivants.find(x => x.id == sel.value);
+  if (a) {
+    badge.textContent = a.phase;
+    badge.className = 'phase-badge ' + PHASE_CSS[a.phase];
+    badge.style.display = '';
+    note.textContent = FREQ[a.phase] || '';
+  } else {
+    badge.style.display = 'none';
+    note.textContent = 'Sélectionne un arrivant pour commencer';
+  }
+}
+
+function renderCollabGrid() {
+  const g = document.getElementById('collab-grid');
+  g.innerHTML = '';
+  state.collaborateurs.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'collab-chip';
+    div.innerHTML = `
+      <div>
+        <div class="chip-name">${c.prenom} ${c.nom}</div>
+        <div class="chip-dept">${c.dept} · ${c.site}</div>
+      </div>
+      <button onclick="removeCollab(${c.id})" title="Supprimer">✕</button>
+    `;
+    g.appendChild(div);
+  });
+}
+
+function renderArrivantList() {
+  const list = document.getElementById('arrivant-list');
+  list.innerHTML = '';
+  state.arrivants.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'arrivant-item';
+    div.innerHTML = `
+      <div class="ai-name">${a.prenom} ${a.nom}</div>
+      <select onchange="updateArrivantPhase(${a.id}, this.value)">
+        ${['Phase 1','Phase 2','Phase 3'].map(p => `<option${p===a.phase?' selected':''}>${p}</option>`).join('')}
+      </select>
+      <button onclick="removeArrivant(${a.id})" title="Supprimer">✕</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function renderHistorique() {
+  const list = document.getElementById('history-list');
+  if (state.historique.length === 0) {
+    list.innerHTML = '<div class="empty-history">Aucun tirage effectué pour l\'instant.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  [...state.historique].reverse().forEach(h => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <span class="hi-arrow">→</span>
+      <div class="hi-names">
+        <div class="hi-arrivant">${h.arrivantPrenom} ${h.arrivantNom}</div>
+        <div class="hi-collab">reçoit ${h.collabPrenom} ${h.collabNom} · ${h.collabDept}</div>
+      </div>
+      <span class="hi-phase phase-badge ${PHASE_CSS[h.phase]}">${h.phase}</span>
+      <span class="hi-date">${h.date}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────────────
+function addCollab() {
+  const nom    = document.getElementById('inp-nom').value.trim();
+  const prenom = document.getElementById('inp-prenom').value.trim();
+  const dept   = document.getElementById('inp-dept').value.trim();
+  const site   = document.getElementById('inp-site').value;
+  if (!nom || !prenom) return toast('Nom et prénom requis');
+  state.collaborateurs.push({ id: state.nextId++, nom, prenom, dept: dept||'—', site });
+  document.getElementById('inp-nom').value = '';
+  document.getElementById('inp-prenom').value = '';
+  document.getElementById('inp-dept').value = '';
+  renderCollabGrid();
+  toast('Collaborateur ajouté ✓');
+}
+
+function removeCollab(id) {
+  state.collaborateurs = state.collaborateurs.filter(c => c.id !== id);
+  renderCollabGrid();
+}
+
+function addArrivant() {
+  const nom    = document.getElementById('inp-arr-nom').value.trim();
+  const prenom = document.getElementById('inp-arr-prenom').value.trim();
+  const phase  = document.getElementById('inp-arr-phase').value;
+  if (!nom || !prenom) return toast('Nom et prénom requis');
+  state.arrivants.push({ id: state.nextArrId++, nom, prenom, phase });
+  document.getElementById('inp-arr-nom').value = '';
+  document.getElementById('inp-arr-prenom').value = '';
+  renderArrivantList();
+  renderArrivantSelect();
+  toast('Arrivant ajouté ✓');
+}
+
+function removeArrivant(id) {
+  state.arrivants = state.arrivants.filter(a => a.id !== id);
+  renderArrivantList();
+  renderArrivantSelect();
+}
+
+function updateArrivantPhase(id, phase) {
+  const a = state.arrivants.find(x => x.id === id);
+  if (a) { a.phase = phase; renderArrivantSelect(); }
+}
+
+// ── ROULETTE ───────────────────────────────────────────────────────────────
+function lancerRoulette() {
+  const sel = document.getElementById('select-arrivant');
+  const arrivant = state.arrivants.find(a => a.id == sel.value);
+  if (!arrivant) return toast('Sélectionne un arrivant d\'abord');
+  if (state.collaborateurs.length === 0) return toast('Aucun collaborateur dans la liste');
+
+  // Historique pour cet arrivant
+  const deja = new Set(
+    state.historique
+      .filter(h => h.arrivantId === arrivant.id)
+      .map(h => h.collabId)
+  );
+
+  let pool = state.collaborateurs.filter(c => !deja.has(c.id));
+
+  // Si tous tirés, reset
+  if (pool.length === 0) {
+    toast('Tous tirés — on recommence depuis le début !');
+    state.historique = state.historique.filter(h => h.arrivantId !== arrivant.id);
+    pool = state.collaborateurs.slice();
+  }
+
+  // Tirage
+  const collab = pool[Math.floor(Math.random() * pool.length)];
+
+  // Afficher résultat avec animation
+  document.getElementById('result-section').style.display = '';
+  const card = document.getElementById('result-card');
+  card.classList.add('spinning');
+  setTimeout(() => card.classList.remove('spinning'), 500);
+
+  document.getElementById('result-name').textContent = collab.prenom + ' ' + collab.nom;
+  document.getElementById('result-meta').textContent = collab.dept + ' · ' + collab.site;
+
+  const phaseMap = {
+    "Phase 1": "vient tout juste d'arriver chez FBD",
+    "Phase 2": "est en pleine montée en compétences",
+    "Phase 3": "finalise son parcours d'intégration",
+  };
+  document.getElementById('result-for').innerHTML =
+    `Désigné(e) pour accueillir <strong>${arrivant.prenom} ${arrivant.nom}</strong> — ${arrivant.phase}`;
+
+  // Message
+  const msg = `Bonjour ${collab.prenom},\n\nLa roulette café FBD t'a désigné(e) pour accueillir ${arrivant.prenom} ${arrivant.nom}, qui ${phaseMap[arrivant.phase] || 'a récemment rejoint FBD'}.\n\nL'idée : lui proposer un café (ou un appel de 20 min) pour lui faire découvrir ton quotidien et répondre à ses questions.\n\nPas de préparation requise — juste un échange humain et spontané.\n\nContacte-le/la directement sur Workvivo !\n\nL'équipe RH FBD`;
+
+  document.getElementById('msg-section').style.display = '';
+  document.getElementById('msg-box').textContent = msg;
+
+  const btn = document.getElementById('copy-btn');
+  btn.classList.remove('copied');
+  btn.innerHTML = '<span>⎘</span> Copier le message';
+
+  // Enregistrer
+  const now = new Date();
+  const date = now.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  state.historique.push({
+    arrivantId: arrivant.id,
+    arrivantNom: arrivant.nom, arrivantPrenom: arrivant.prenom,
+    collabId: collab.id,
+    collabNom: collab.nom, collabPrenom: collab.prenom, collabDept: collab.dept,
+    phase: arrivant.phase, date,
+  });
+  renderHistorique();
+  toast('Tirage effectué ✓');
+}
+
+function copyMsg() {
+  const txt = document.getElementById('msg-box').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span> Copié !';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>⎘</span> Copier le message';
+    }, 2500);
+  });
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
