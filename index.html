@@ -8,22 +8,24 @@
 <style>
   :root { --ink: #1a1a2e; --cream: #f7f3ee; --coffee: #6b3f1f; --caramel:#c07830; --foam: #e8d5b7; --radius: 16px; }
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 40px 20px; }
-  .page { max-width: 800px; margin: 0 auto; }
+  .page { max-width: 600px; margin: 0 auto; }
   header { text-align: center; margin-bottom: 40px; }
-  header h1 { font-family: 'Playfair Display', serif; color: var(--coffee); font-size: 2.5rem; }
+  header h1 { font-family: 'Playfair Display', serif; color: var(--coffee); font-size: 2.5rem; margin-bottom: 10px; }
   .card { background: #fff; border-radius: var(--radius); border: 1px solid var(--foam); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 24px; }
   .section-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; color: var(--caramel); margin-bottom: 15px; display: block; }
-  .btn-spin { background: var(--coffee); color: #fff; border: none; border-radius: 12px; padding: 18px 40px; font-family: 'Playfair Display', serif; font-size: 1.2rem; cursor: pointer; width: 100%; transition: transform 0.2s; }
-  .btn-spin:hover { transform: scale(1.02); }
-  .result-card { background: var(--coffee); color: #fff; border-radius: var(--radius); padding: 25px; display: none; text-align: center; margin-top: 20px; }
-  .result-name { font-family: 'Playfair Display', serif; font-size: 2rem; margin: 10px 0; }
-  .msg-box { background: #f9f6f2; border-left: 4px solid var(--caramel); padding: 15px; font-size: 0.9rem; white-space: pre-wrap; margin: 15px 0; color: #444; text-align: left; }
-  .copy-btn { background: var(--caramel); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-  .collab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; }
-  .collab-chip { background: #fdfcfb; border: 1px solid var(--foam); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; }
-  .add-collab { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .add-collab input { flex: 1; padding: 10px; border: 1px solid var(--foam); border-radius: 8px; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; display: none; }
+  .btn-spin { background: var(--coffee); color: #fff; border: none; border-radius: 12px; padding: 18px 40px; font-family: 'Playfair Display', serif; font-size: 1.2rem; cursor: pointer; width: 100%; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(107,63,31,0.2); }
+  .btn-spin:hover { transform: scale(1.02); background: #4d2d16; }
+  .result-card { background: var(--coffee); color: #fff; border-radius: var(--radius); padding: 30px; display: none; text-align: center; margin-top: 25px; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .result-name { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin: 15px 0; color: #fff; }
+  .msg-box { background: rgba(255,255,255,0.05); border-left: 4px solid var(--caramel); padding: 20px; font-size: 0.95rem; white-space: pre-wrap; margin: 20px 0; color: #eee; text-align: left; line-height: 1.5; }
+  .copy-btn { background: var(--caramel); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 500; width: 100%; transition: background 0.2s; }
+  .copy-btn:hover { background: #a66525; }
+  .collab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+  .collab-chip { background: #fdfcfb; border: 1px solid var(--foam); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+  .add-collab { display: flex; gap: 8px; margin-bottom: 20px; }
+  .add-collab input { flex: 1; padding: 12px; border: 1px solid var(--foam); border-radius: 8px; font-family: inherit; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: white; padding: 12px 25px; border-radius: 30px; display: none; z-index: 100; font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -31,29 +33,28 @@
 <div class="page">
   <header>
     <h1>☕ Roulette Café FBD</h1>
-    <p>Brise la glace avec un collègue !</p>
+    <p>Un tirage, une rencontre, un café.</p>
   </header>
 
   <section>
-    <button class="btn-spin" onclick="lancerTirage()">✦ Lancer le tirage au sort</button>
+    <button class="btn-spin" onclick="lancerTirage()">✦ Tirer un collègue au sort</button>
     
     <div id="result-section" class="result-card">
-      <div style="font-size: 0.8rem; opacity: 0.8;">TON BINÔME CAFÉ :</div>
+      <div style="font-size: 0.85rem; uppercase; letter-spacing: 1px; opacity: 0.8;">VOTRE BINÔME :</div>
       <div class="result-name" id="res-name">Sophie Martin</div>
-      <div id="res-dept" style="font-size: 0.9rem; margin-bottom: 15px;">Marketing · Roissy</div>
       
       <div class="msg-box" id="msg-text"></div>
-      <button class="copy-btn" onclick="copyMsg()">Copier le message pour Teams</button>
+      <button class="copy-btn" onclick="copyMsg()">Copier l'invitation Teams</button>
     </div>
   </section>
 
-  <section style="margin-top: 50px;">
-    <span class="section-label">Gestion des collaborateurs</span>
+  <section style="margin-top: 60px;">
+    <span class="section-label">Liste des collaborateurs</span>
     <div class="card">
       <div class="add-collab">
         <input type="text" id="in-prenom" placeholder="Prénom">
         <input type="text" id="in-nom" placeholder="Nom">
-        <button onclick="ajouterCollab()" style="background:var(--caramel); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Ajouter</button>
+        <button onclick="ajouterCollab()" style="background:var(--caramel); color:white; border:none; padding:0 20px; border-radius:8px; cursor:pointer; font-weight:bold;">+</button>
       </div>
       <div class="collab-grid" id="collab-list"></div>
     </div>
@@ -63,302 +64,300 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// --- TA LISTE DE COLLABORATEURS ---
+// --- GESTION DE LA LISTE ---
 let collaborateurs = [
-{,prénom:"Cassandre",nom :"ALLIAS"},
-{,prénom:"Maud",nom :"SALERNO"},
-{,prénom:"Bryan",nom :"JIMENEZ"},
-{,prénom:"Sophie",nom :"CARMINATI"},
-{,prénom:"Karine",nom :"BRETON"},
-{,prénom:"Jean Noel",nom :"SCHEER"},
-{,prénom:"Chloe",nom :"SAULAIS"},
-{,prénom:"Jason",nom :"TAVARES"},
-{,prénom:"Laurie",nom :"CHALLANCIN"},
-{,prénom:"Kassy",nom :"BERANGE"},
-{,prénom:"Delphine",nom :"BECKERS"},
-{,prénom:"Orlane",nom :"KOUNOUGOUS"},
-{,prénom:"Ylies",nom :"LASSALLE"},
-{,prénom:"Ronnie",nom :"HARMELING"},
-{,prénom:"Pascal",nom :"TA"},
-{,prénom:"Franck",nom :"ECALARD"},
-{,prénom:"Julie",nom :"MORVAN"},
-{,prénom:"Gregory",nom :"JOANIQUET"},
-{,prénom:"Fabien",nom :"SCAVINER"},
-{,prénom:"Jeanne",nom :"LE GALL"},
-{,prénom:"Valentin",nom :"TANGUY"},
-{,prénom:"Isabelle",nom :"DASQUET - LANGIN"},
-{,prénom:"Delphine",nom :"VERGEZ"},
-{,prénom:"Julien",nom :"HUIBAN"},
-{,prénom:"Corinne",nom :"DOIGNY"},
-{,prénom:"Céline",nom :"MOREAU"},
-{,prénom:"Valerie",nom :"CUEFF"},
-{,prénom:"Lilly",nom :"MANESTA"},
-{,prénom:"Simon",nom :"LEFEVRE"},
-{,prénom:"Marion",nom :"CADIOU"},
-{,prénom:"Romain",nom :"WATTEBLED"},
-{,prénom:"Anthony",nom :"RIPAUD"},
-{,prénom:"Soukaina",nom :"ALIDE"},
-{,prénom:"Patrick",nom :"VANCAYSEELE"},
-{,prénom:"Sylvie",nom :"JOSSE"},
-{,prénom:"Carole",nom :"GUILLOT"},
-{,prénom:"Olivier",nom :"DELACRE"},
-{,prénom:"Laura",nom :"PELYSSE"},
-{,prénom:"Nathalie",nom :"SCHAEDELE"},
-{,prénom:"Hazare",nom :"LAROUSSI"},
-{,prénom:"Cédric",nom :"HELIAS"},
-{,prénom:"Hélène",nom :"PIRES LETORT"},
-{,prénom:"Benoit",nom :"MISPIRATCEGUY"},
-{,prénom:"Anne Charlotte",nom :"AUTRET"},
-{,prénom:"Tamara",nom :"HAMEURLAINE"},
-{,prénom:"Alexia",nom :"FARGE"},
-{,prénom:"Yael",nom :"CHEVAL"},
-{,prénom:"Massinissa",nom :"IKENE"},
-{,prénom:"Karine",nom :"CORSETTI"},
-{,prénom:"Christopher",nom :"GUIHARD"},
-{,prénom:"Gerald",nom :"LIOGIER"},
-{,prénom:"Lucile",nom :"SENDLAK"},
-{,prénom:"Sophie",nom :"CHERVIN"},
-{,prénom:"Melissa",nom :"MITSHIMU"},
-{,prénom:"Kenza",nom :"KHALED"},
-{,prénom:"Sofia",nom :"CHANTOISEAU"},
-{,prénom:"Olivier",nom :"NONG"},
-{,prénom:"Charlotte",nom :"DELCROIX"},
-{,prénom:"Dan",nom :"CHIKLI"},
-{,prénom:"Ronan",nom :"HUON"},
-{,prénom:"Soufiane",nom :"BESSAA"},
-{,prénom:"Antoine",nom :"MUNOS"},
-{,prénom:"Patricia",nom :"MORVAN"},
-{,prénom:"Xavier",nom :"WARLUZELLE"},
-{,prénom:"Emmanuelle",nom :"DECOT"},
-{,prénom:"Bruno",nom :"ANNA"},
-{,prénom:"Monique",nom :"OLIVEIRA"},
-{,prénom:"Ingrid",nom :"LE BEUX"},
-{,prénom:"Dylan",nom :"BRULLEFERT"},
-{,prénom:"Maeva",nom :"ANANY"},
-{,prénom:"Gabrielle",nom :"LEROY"},
-{,prénom:"Michael",nom :"ROSIN"},
-{,prénom:"Wilfried",nom :"FEDERO"},
-{,prénom:"Priscilla",nom :"MISCHLER"},
-{,prénom:"Damien",nom :"COUPET"},
-{,prénom:"Laurie",nom :"MACHY"},
-{,prénom:"Sandrine",nom :"BADEE"},
-{,prénom:"Camille",nom :"EL SAYYED"},
-{,prénom:"Fiona",nom :"AMOROSO"},
-{,prénom:"Ingrid",nom :"CHETRIT"},
-{,prénom:"Sandrine",nom :"GARCIA"},
-{,prénom:"Magda",nom :"HANNON"},
-{,prénom:"Herve",nom :"MUTABAZI"},
-{,prénom:"Isabel",nom :"RODRIGUES"},
-{,prénom:"Tom",nom :"HEYLEN"},
-{,prénom:"Amaria",nom :"MENOUAR"},
-{,prénom:"Khadija",nom :"ZANDAGUE"},
-{,prénom:"Sandra",nom :"PIERROT"},
-{,prénom:"Denis",nom :"LUCHTENS"},
-{,prénom:"Dinahly",nom :"DEVONIN"},
-{,prénom:"Emeline",nom :"LEBELTEL"},
-{,prénom:"Arthur",nom :"CARRETTE"},
-{,prénom:"Michael",nom :"CHANTOB"},
-{,prénom:"Yahya",nom :"FILALI BABA"},
-{,prénom:"François",nom :"DE BROUCHOVEN DE BERGEYCK"},
-{,prénom:"Julie",nom :"LONG"},
-{,prénom:"Leila",nom :"DRIF"},
-{,prénom:"Jean Pierre",nom :"GOMIS"},
-{,prénom:"Sofiane",nom :"BENNAI"},
-{,prénom:"Eric",nom :"DE LA SIMONE"},
-{,prénom:"Celine",nom :"ZION"},
-{,prénom:"Tony",nom :"JAN"},
-{,prénom:"Pape",nom :"BADIANE"},
-{,prénom:"Chadia",nom :"ZENFOUR"},
-{,prénom:"Frederic",nom :"FAUGON"},
-{,prénom:"Olivier",nom :"FERRIOT"},
-{,prénom:"Marine",nom :"FRESNEL"},
-{,prénom:"Joel",nom :"GROSSARD"},
-{,prénom:"Steven",nom :"ROUAT"},
-{,prénom:"Manon",nom :"COULON"},
-{,prénom:"Elodie",nom :"CHEVREUX"},
-{,prénom:"Victor",nom :"JOUNIAUX"},
-{,prénom:"Vanessa",nom :"LOPES ESTRONCA"},
-{,prénom:"Charlène",nom :"GLANDOR"},
-{,prénom:"Jean-Philippe",nom :"COSTA"},
-{,prénom:"Stéphane",nom :"PERQUIS"},
-{,prénom:"Iona",nom :"HARRINGTON"},
-{,prénom:"Peter",nom :"MOMMERENCY"},
-{,prénom:"Anaelle",nom :"PRIEUX"},
-{,prénom:"Laetitia",nom :"DJENADI"},
-{,prénom:"Houda",nom :"MEHDI"},
-{,prénom:"Marie",nom :"FRANCARD"},
-{,prénom:"Michel",nom :"PIOGER"},
-{,prénom:"Anna",nom :"ANDRIANASOLO"},
-{,prénom:"Jessica",nom :"DUVAL"},
-{,prénom:"Elodie",nom :"COUTAND"},
-{,prénom:"Jeanne",nom :"SAVERINADIN"},
-{,prénom:"Audrey",nom :"VERMOESEN"},
-{,prénom:"François",nom :"VER ELST-REUL"},
-{,prénom:"Salimata",nom :"TRAORE"},
-{,prénom:"Bouchra",nom :"BOUCHFIRA"},
-{,prénom:"Nathalie",nom :"GENTILE-MARTIN"},
-{,prénom:"Romain",nom :"CORDEIRO"},
-{,prénom:"Gregory",nom :"COSNARD"},
-{,prénom:"Marion",nom :"COTONEA"},
-{,prénom:"Cyril",nom :"TONNELLIER"},
-{,prénom:"Laura",nom :"CAMISA"},
-{,prénom:"Marlène",nom :"DANIEL"},
-{,prénom:"Lucile",nom :"TESTART"},
-{,prénom:"Gatien",nom :"ADRIAN"},
-{,prénom:"David",nom :"NARA"},
-{,prénom:"Meryl",nom :"YALA"},
-{,prénom:"Céline",nom :"MERLAUT"},
-{,prénom:"Akila",nom :"MOUALKIA"},
-{,prénom:"Sonia",nom :"DAHECH"},
-{,prénom:"Melissa",nom :"SU"},
-{,prénom:"Nicolas",nom :"GERSANT"},
-{,prénom:"Frederic",nom :"LACOUR"},
-{,prénom:"Aniqah",nom :"MERCHANT"},
-{,prénom:"Aurelie",nom :"COUDERT"},
-{,prénom:"Céline",nom :"POUJADE"},
-{,prénom:"Coline",nom :"GRIENENBERGER"},
-{,prénom:"Mohamed",nom :"BEKKOUCHE"},
-{,prénom:"Nicolas",nom :"BROUXEL"},
-{,prénom:"Juan-manuel",nom :"BUSTAMANTE"},
-{,prénom:"Kevin",nom :"MEVEL"},
-{,prénom:"Kanika",nom :"PACH"},
-{,prénom:"Coralie",nom :"LOUIS"},
-{,prénom:"Nicolas",nom :"JEANROY"},
-{,prénom:"Sebastien",nom :"CORDIER"},
-{,prénom:"Lorena",nom :"RUBIO"},
-{,prénom:"Adrian",nom :"BREL"},
-{,prénom:"Henri",nom :"CHANGENOT"},
-{,prénom:"Elizabeth",nom :"TELLEGEN"},
-{,prénom:"Claire-Annie",nom :"KABUYA"},
-{,prénom:"Laurent",nom :"MAHE"},
-{,prénom:"Cathy",nom :"AYACCHI"},
-{,prénom:"Wilfried",nom :"NOUBISSI"},
-{,prénom:"Hugues",nom :"BURET"},
-{,prénom:"Nina",nom :"RENAUDEAU"},
-{,prénom:"Joëlle",nom :"JOSEPH"},
-{,prénom:"Dino",nom :"TADDIO"},
-{,prénom:"Sergio",nom :"DA SILVA"},
-{,prénom:"Dounya",nom :"VAIVAIKAVA"},
-{,prénom:"Kevin",nom :"BENOIT"},
-{,prénom:"Maxime",nom :"DUNAND"},
-{,prénom:"François",nom :"CHAUSSE"},
-{,prénom:"Hugues",nom :"BENOIT"},
-{,prénom:"Maxime",nom :"ALLAN"},
-{,prénom:"Stephane",nom :"BELGRAND"},
-{,prénom:"Fardaty",nom :"YOUSSOUF"},
-{,prénom:"Jessica",nom :"DALON"},
-{,prénom:"Ariane",nom :"ARGYROPOULOS"},
-{,prénom:"Ameni",nom :"ABED"},
-{,prénom:"Marc",nom :"DALLEAU"},
-{,prénom:"Charlotte",nom :"PAQUET"},
-{,prénom:"Alessandra",nom :"PANZANI"},
-{,prénom:"Anthony",nom :"CHIARIGLIONE"},
-{,prénom:"Anne",nom :"GUILLAUME"},
-{,prénom:"Loic",nom :"PAITEL"},
-{,prénom:"Samy",nom :"RIHANE"},
-{,prénom:"Murphy",nom :"TAILLY"},
-{,prénom:"Veronique",nom :"GORS"},
-{,prénom:"Nadia",nom :"BODIN"},
-{,prénom:"Veronique",nom :"ZONZON"},
-{,prénom:"Mladen",nom :"LUKIC"},
-{,prénom:"Fabrice",nom :"MONJEAN"},
-{,prénom:"Pierrick",nom :"METIVIER"},
-{,prénom:"Aurore",nom :"LECLERCQ"},
-{,prénom:"Simon",nom :"WILLER"},
-{,prénom:"Cecile",nom :"LEFORT"},
-{,prénom:"Gurvan",nom :"CARIOU"},
-{,prénom:"Romain",nom :"NICOT"},
-{,prénom:"Dahbia",nom :"MILOUDI"},
-{,prénom:"Solenn",nom :"BOISSON"},
-{,prénom:"Aurore",nom :"GBAGUIDI"},
-{,prénom:"Julie",nom :"BACHARD"},
-{,prénom:"Bertrand",nom :"CHENNEVIER"},
-{,prénom:"Jerome",nom :"DELGRANGE"},
-{,prénom:"Clementine",nom :"LE MOIGNE"},
-{,prénom:"Nathalie",nom :"MURCIA"},
-{,prénom:"Mark",nom :"BARTELS"},
-{,prénom:"Willem",nom :"DE SMEDT"},
-{,prénom:"Sylvain",nom :"MAUBERRET"},
-{,prénom:"Jérémy",nom :"SILBOIS"},
-{,prénom:"Larry",nom :"BUCKMAN"},
-{,prénom:"Alex",nom :"DUBRU"},
-{,prénom:"Benoit",nom :"CHEVALIER"},
-{,prénom:"Guy-Olivier",nom :"DALLE"},
-{,prénom:"Judes",nom :"GUERRIER"},
-{,prénom:"Philippe",nom :"MIOUSSET"},
-{,prénom:"Laura",nom :"HERMANS"},
-{,prénom:"Rébecca",nom :"MOUSTIN-AUBATIN"},
-{,prénom:"Pierre",nom :"THOULET"},
-{,prénom:"David",nom :"EXUMAT"},
-{prénom:"Philippe",nom :"GOUTTEGATAT"},
-{prénom:"Raphael",nom :"BOILLOT"},
-{prénom:"Marie-Dominique",nom :"MARGUERY"},
-{prénom:"Aurélie",nom :"RINGUET"},
-{prénom:"Xavier",nom :"POISVERT"},
-{prénom:"Bertrand",nom :"FERRE"},
-{prénom:"Maxime",nom :"BOUHIERE"},
-{prénom:"Magalie",nom :"LEMOINE"},
-{prénom:"Marie Paule",nom :"MUGENI"},
-{prénom:"Laure",nom :"NICOLAS"},
-{prénom:"Marta",nom :"MARTINEZ DE VELASCO"},
-{prénom:"Isabelle",nom :"VERMEIR"},
-{prénom:"Joelle",nom :"ROLAND"},
-{prénom:"Yanis",nom :"SOULIE"},
-{prénom:"Alexandra",nom :"GUENOUN"},
-{prénom:"Alexis",nom :"VILADOMAT"},
-{prénom:"Cyrielle",nom :"CLAIR"},
-{prénom:"Serena",nom :"ANTOLINI"},
-{prénom:"Lucile",nom :"JAVELLE"},
-{prénom:"Léa",nom :"LEMARIE"},
-{prénom:"Bruno",nom :"CHALOU"},
-{prénom:"Sébastien",nom :"LAHCENE"},
-{prénom:"Julie",nom :"DARMON"},
-{prénom:"Rodolphe",nom :"VAN CAUBERGH"},
-{prénom:"Myriam",nom :"VILLARD"},
-{prénom:"Francesco",nom :"FONTANA"},
-{prénom:"Emmanuel",nom :"BOHOUSSOU"},
-{prénom:"David",nom :"HUET"},
-{prénom:"Malcolm",nom :"ASIANA"},
-{prénom:"Nicolas",nom :"ROUCOU"},
-{prénom:"Engin",nom :"SENOL"},
-{prénom:"Serpil",nom :"SEVEN"},
-{prénom:"Erwin",nom :"MEDELICE"},
-{prénom:"Kathleen",nom :"HAMMOND"},
-{prénom:"Andrea",nom :"KEOUA"},
-{prénom:"Helena",nom :"DUDEK"},
-{prénom:"France",nom :"GASTINEAU"},
-{prénom:"Amine",nom :"BENOTMANE"},
-{prénom:"Sarah",nom :"CHEIKH"},
-{prénom:"Charles Henry",nom :"NKOSI"},
-{prénom:"Stéphane",nom :"JONNERY"},
-{prénom:"Nisar",nom :"BOURKISS"},
-{prénom:"Abirami",nom :"MARIMUTHU"},
-{prénom:"Koen",nom :"VAN DER HAEGEN"},
+  { prénom: "Cassandre", nom : "ALLIAS" },
+  { prénom: "Maud", nom : "SALERNO" },
+  { prénom: "Bryan", nom : "JIMENEZ" },
+  { prénom: "Sophie", nom : "CARMINATI" },
+  { prénom: "Karine", nom : "BRETON" },
+  { prénom: "Jean Noel", nom : "SCHEER" },
+  { prénom: "Chloe", nom : "SAULAIS" },
+  { prénom: "Jason", nom : "TAVARES" },
+  { prénom: "Laurie", nom : "CHALLANCIN" },
+  { prénom: "Kassy", nom : "BERANGE" },
+  { prénom: "Delphine", nom : "BECKERS" },
+  { prénom: "Orlane", nom : "KOUNOUGOUS" },
+  { prénom: "Ylies", nom : "LASSALLE" },
+  { prénom: "Ronnie", nom : "HARMELING" },
+  { prénom: "Pascal", nom : "TA" },
+  { prénom: "Franck", nom : "ECALARD" },
+  { prénom: "Julie", nom : "MORVAN" },
+  { prénom: "Gregory", nom : "JOANIQUET" },
+  { prénom: "Fabien", nom : "SCAVINER" },
+  { prénom: "Jeanne", nom : "LE GALL" },
+  { prénom: "Valentin", nom : "TANGUY" },
+  { prénom: "Isabelle", nom : "DASQUET - LANGIN" },
+  { prénom: "Delphine", nom : "VERGEZ" },
+  { prénom: "Julien", nom : "HUIBAN" },
+  { prénom: "Corinne", nom : "DOIGNY" },
+  { prénom: "Céline", nom : "MOREAU" },
+  { prénom: "Valerie", nom : "CUEFF" },
+  { prénom: "Lilly", nom : "MANESTA" },
+  { prénom: "Simon", nom : "LEFEVRE" },
+  { prénom: "Marion", nom : "CADIOU" },
+  { prénom: "Romain", nom : "WATTEBLED" },
+  { prénom: "Anthony", nom : "RIPAUD" },
+  { prénom: "Soukaina", nom : "ALIDE" },
+  { prénom: "Patrick", nom : "VANCAYSEELE" },
+  { prénom: "Sylvie", nom : "JOSSE" },
+  { prénom: "Carole", nom : "GUILLOT" },
+  { prénom: "Olivier", nom : "DELACRE" },
+  { prénom: "Laura", nom : "PELYSSE" },
+  { prénom: "Nathalie", nom : "SCHAEDELE" },
+  { prénom: "Hazare", nom : "LAROUSSI" },
+  { prénom: "Cédric", nom : "HELIAS" },
+  { prénom: "Hélène", nom : "PIRES LETORT" },
+  { prénom: "Benoit", nom : "MISPIRATCEGUY" },
+  { prénom: "Anne Charlotte", nom : "AUTRET" },
+  { prénom: "Tamara", nom : "HAMEURLAINE" },
+  { prénom: "Alexia", nom : "FARGE" },
+  { prénom: "Yael", nom : "CHEVAL" },
+  { prénom: "Massinissa", nom : "IKENE" },
+  { prénom: "Karine", nom : "CORSETTI" },
+  { prénom: "Christopher", nom : "GUIHARD" },
+  { prénom: "Gerald", nom : "LIOGIER" },
+  { prénom: "Lucile", nom : "SENDLAK" },
+  { prénom: "Sophie", nom : "CHERVIN" },
+  { prénom: "Melissa", nom : "MITSHIMU" },
+  { prénom: "Kenza", nom : "KHALED" },
+  { prénom: "Sofia", nom : "CHANTOISEAU" },
+  { prénom: "Olivier", nom : "NONG" },
+  { prénom: "Charlotte", nom : "DELCROIX" },
+  { prénom: "Dan", nom : "CHIKLI" },
+  { prénom: "Ronan", nom : "HUON" },
+  { prénom: "Soufiane", nom : "BESSAA" },
+  { prénom: "Antoine", nom : "MUNOS" },
+  { prénom: "Patricia", nom : "MORVAN" },
+  { prénom: "Xavier", nom : "WARLUZELLE" },
+  { prénom: "Emmanuelle", nom : "DECOT" },
+  { prénom: "Bruno", nom : "ANNA" },
+  { prénom: "Monique", nom : "OLIVEIRA" },
+  { prénom: "Ingrid", nom : "LE BEUX" },
+  { prénom: "Dylan", nom : "BRULLEFERT" },
+  { prénom: "Maeva", nom : "ANANY" },
+  { prénom: "Gabrielle", nom : "LEROY" },
+  { prénom: "Michael", nom : "ROSIN" },
+  { prénom: "Wilfried", nom : "FEDERO" },
+  { prénom: "Priscilla", nom : "MISCHLER" },
+  { prénom: "Damien", nom : "COUPET" },
+  { prénom: "Laurie", nom : "MACHY" },
+  { prénom: "Sandrine", nom : "BADEE" },
+  { prénom: "Camille", nom : "EL SAYYED" },
+  { prénom: "Fiona", nom : "AMOROSO" },
+  { prénom: "Ingrid", nom : "CHETRIT" },
+  { prénom: "Sandrine", nom : "GARCIA" },
+  { prénom: "Magda", nom : "HANNON" },
+  { prénom: "Herve", nom : "MUTABAZI" },
+  { prénom: "Isabel", nom : "RODRIGUES" },
+  { prénom: "Tom", nom : "HEYLEN" },
+  { prénom: "Amaria", nom : "MENOUAR" },
+  { prénom: "Khadija", nom : "ZANDAGUE" },
+  { prénom: "Sandra", nom : "PIERROT" },
+  { prénom: "Denis", nom : "LUCHTENS" },
+  { prénom: "Dinahly", nom : "DEVONIN" },
+  { prénom: "Emeline", nom : "LEBELTEL" },
+  { prénom: "Arthur", nom : "CARRETTE" },
+  { prénom: "Michael", nom : "CHANTOB" },
+  { prénom: "Yahya", nom : "FILALI BABA" },
+  { prénom: "François", nom : "DE BROUCHOVEN DE BERGEYCK" },
+  { prénom: "Julie", nom : "LONG" },
+  { prénom: "Leila", nom : "DRIF" },
+  { prénom: "Jean Pierre", nom : "GOMIS" },
+  { prénom: "Sofiane", nom : "BENNAI" },
+  { prénom: "Eric", nom : "DE LA SIMONE" },
+  { prénom: "Celine", nom : "ZION" },
+  { prénom: "Tony", nom : "JAN" },
+  { prénom: "Pape", nom : "BADIANE" },
+  { prénom: "Chadia", nom : "ZENFOUR" },
+  { prénom: "Frederic", nom : "FAUGON" },
+  { prénom: "Olivier", nom : "FERRIOT" },
+  { prénom: "Marine", nom : "FRESNEL" },
+  { prénom: "Joel", nom : "GROSSARD" },
+  { prénom: "Steven", nom : "ROUAT" },
+  { prénom: "Manon", nom : "COULON" },
+  { prénom: "Elodie", nom : "CHEVREUX" },
+  { prénom: "Victor", nom : "JOUNIAUX" },
+  { prénom: "Vanessa", nom : "LOPES ESTRONCA" },
+  { prénom: "Charlène", nom : "GLANDOR" },
+  { prénom: "Jean-Philippe", nom : "COSTA" },
+  { prénom: "Stéphane", nom : "PERQUIS" },
+  { prénom: "Iona", nom : "HARRINGTON" },
+  { prénom: "Peter", nom : "MOMMERENCY" },
+  { prénom: "Anaelle", nom : "PRIEUX" },
+  { prénom: "Laetitia", nom : "DJENADI" },
+  { prénom: "Houda", nom : "MEHDI" },
+  { prénom: "Marie", nom : "FRANCARD" },
+  { prénom: "Michel", nom : "PIOGER" },
+  { prénom: "Anna", nom : "ANDRIANASOLO" },
+  { prénom: "Jessica", nom : "DUVAL" },
+  { prénom: "Elodie", nom : "COUTAND" },
+  { prénom: "Jeanne", nom : "SAVERINADIN" },
+  { prénom: "Audrey", nom : "VERMOESEN" },
+  { prénom: "François", nom : "VER ELST-REUL" },
+  { prénom: "Salimata", nom : "TRAORE" },
+  { prénom: "Bouchra", nom : "BOUCHFIRA" },
+  { prénom: "Nathalie", nom : "GENTILE-MARTIN" },
+  { prénom: "Romain", nom : "CORDEIRO" },
+  { prénom: "Gregory", nom : "COSNARD" },
+  { prénom: "Marion", nom : "COTONEA" },
+  { prénom: "Cyril", nom : "TONNELLIER" },
+  { prénom: "Laura", nom : "CAMISA" },
+  { prénom: "Marlène", nom : "DANIEL" },
+  { prénom: "Lucile", nom : "TESTART" },
+  { prénom: "Gatien", nom : "ADRIAN" },
+  { prénom: "David", nom : "NARA" },
+  { prénom: "Meryl", nom : "YALA" },
+  { prénom: "Céline", nom : "MERLAUT" },
+  { prénom: "Akila", nom : "MOUALKIA" },
+  { prénom: "Sonia", nom : "DAHECH" },
+  { prénom: "Melissa", nom : "SU" },
+  { prénom: "Nicolas", nom : "GERSANT" },
+  { prénom: "Frederic", nom : "LACOUR" },
+  { prénom: "Aniqah", nom : "MERCHANT" },
+  { prénom: "Aurelie", nom : "COUDERT" },
+  { prénom: "Céline", nom : "POUJADE" },
+  { prénom: "Coline", nom : "GRIENENBERGER" },
+  { prénom: "Mohamed", nom : "BEKKOUCHE" },
+  { prénom: "Nicolas", nom : "BROUXEL" },
+  { prénom: "Juan-manuel", nom : "BUSTAMANTE" },
+  { prénom: "Kevin", nom : "MEVEL" },
+  { prénom: "Kanika", nom : "PACH" },
+  { prénom: "Coralie", nom : "LOUIS" },
+  { prénom: "Nicolas", nom : "JEANROY" },
+  { prénom: "Sebastien", nom : "CORDIER" },
+  { prénom: "Lorena", nom : "RUBIO" },
+  { prénom: "Adrian", nom : "BREL" },
+  { prénom: "Henri", nom : "CHANGENOT" },
+  { prénom: "Elizabeth", nom : "TELLEGEN" },
+  { prénom: "Claire-Annie", nom : "KABUYA" },
+  { prénom: "Laurent", nom : "MAHE" },
+  { prénom: "Cathy", nom : "AYACCHI" },
+  { prénom: "Wilfried", nom : "NOUBISSI" },
+  { prénom: "Hugues", nom : "BURET" },
+  { prénom: "Nina", nom : "RENAUDEAU" },
+  { prénom: "Joëlle", nom : "JOSEPH" },
+  { prénom: "Dino", nom : "TADDIO" },
+  { prénom: "Sergio", nom : "DA SILVA" },
+  { prénom: "Dounya", nom : "VAIVAIKAVA" },
+  { prénom: "Kevin", nom : "BENOIT" },
+  { prénom: "Maxime", nom : "DUNAND" },
+  { prénom: "François", nom : "CHAUSSE" },
+  { prénom: "Hugues", nom : "BENOIT" },
+  { prénom: "Maxime", nom : "ALLAN" },
+  { prénom: "Stephane", nom : "BELGRAND" },
+  { prénom: "Fardaty", nom : "YOUSSOUF" },
+  { prénom: "Jessica", nom : "DALON" },
+  { prénom: "Ariane", nom : "ARGYROPOULOS" },
+  { prénom: "Ameni", nom : "ABED" },
+  { prénom: "Marc", nom : "DALLEAU" },
+  { prénom: "Charlotte", nom : "PAQUET" },
+  { prénom: "Alessandra", nom : "PANZANI" },
+  { prénom: "Anthony", nom : "CHIARIGLIONE" },
+  { prénom: "Anne", nom : "GUILLAUME" },
+  { prénom: "Loic", nom : "PAITEL" },
+  { prénom: "Samy", nom : "RIHANE" },
+  { prénom: "Murphy", nom : "TAILLY" },
+  { prénom: "Veronique", nom : "GORS" },
+  { prénom: "Nadia", nom : "BODIN" },
+  { prénom: "Veronique", nom : "ZONZON" },
+  { prénom: "Mladen", nom : "LUKIC" },
+  { prénom: "Fabrice", nom : "MONJEAN" },
+  { prénom: "Pierrick", nom : "METIVIER" },
+  { prénom: "Aurore", nom : "LECLERCQ" },
+  { prénom: "Simon", nom : "WILLER" },
+  { prénom: "Cecile", nom : "LEFORT" },
+  { prénom: "Gurvan", nom : "CARIOU" },
+  { prénom: "Romain", nom : "NICOT" },
+  { prénom: "Dahbia", nom : "MILOUDI" },
+  { prénom: "Solenn", nom : "BOISSON" },
+  { prénom: "Aurore", nom : "GBAGUIDI" },
+  { prénom: "Julie", nom : "BACHARD" },
+  { prénom: "Bertrand", nom : "CHENNEVIER" },
+  { prénom: "Jerome", nom : "DELGRANGE" },
+  { prénom: "Clementine", nom : "LE MOIGNE" },
+  { prénom: "Nathalie", nom : "MURCIA" },
+  { prénom: "Mark", nom : "BARTELS" },
+  { prénom: "Willem", nom : "DE SMEDT" },
+  { prénom: "Sylvain", nom : "MAUBERRET" },
+  { prénom: "Jérémy", nom : "SILBOIS" },
+  { prénom: "Larry", nom : "BUCKMAN" },
+  { prénom: "Alex", nom : "DUBRU" },
+  { prénom: "Benoit", nom : "CHEVALIER" },
+  { prénom: "Guy-Olivier", nom : "DALLE" },
+  { prénom: "Judes", nom : "GUERRIER" },
+  { prénom: "Philippe", nom : "MIOUSSET" },
+  { prénom: "Laura", nom : "HERMANS" },
+  { prénom: "Rébecca", nom : "MOUSTIN-AUBATIN" },
+  { prénom: "Pierre", nom : "THOULET" },
+  { prénom: "David", nom : "EXUMAT" },
+  { prénom: "Philippe", nom : "GOUTTEGATAT" },
+  { prénom: "Raphael", nom : "BOILLOT" },
+  { prénom: "Marie-Dominique", nom : "MARGUERY" },
+  { prénom: "Aurélie", nom : "RINGUET" },
+  { prénom: "Xavier", nom : "POISVERT" },
+  { prénom: "Bertrand", nom : "FERRE" },
+  { prénom: "Maxime", nom : "BOUHIERE" },
+  { prénom: "Magalie", nom : "LEMOINE" },
+  { prénom: "Marie Paule", nom : "MUGENI" },
+  { prénom: "Laure", nom : "NICOLAS" },
+  { prénom: "Marta", nom : "MARTINEZ DE VELASCO" },
+  { prénom: "Isabelle", nom : "VERMEIR" },
+  { prénom: "Joelle", nom : "ROLAND" },
+  { prénom: "Yanis", nom : "SOULIE" },
+  { prénom: "Alexandra", nom : "GUENOUN" },
+  { prénom: "Alexis", nom : "VILADOMAT" },
+  { prénom: "Cyrielle", nom : "CLAIR" },
+  { prénom: "Serena", nom : "ANTOLINI" },
+  { prénom: "Lucile", nom : "JAVELLE" },
+  { prénom: "Léa", nom : "LEMARIE" },
+  { prénom: "Bruno", nom : "CHALOU" },
+  { prénom: "Sébastien", nom : "LAHCENE" },
+  { prénom: "Julie", nom : "DARMON" },
+  { prénom: "Rodolphe", nom : "VAN CAUBERGH" },
+  { prénom: "Myriam", nom : "VILLARD" },
+  { prénom: "Francesco", nom : "FONTANA" },
+  { prénom: "Emmanuel", nom : "BOHOUSSOU" },
+  { prénom: "David", nom : "HUET" },
+  { prénom: "Malcolm", nom : "ASIANA" },
+  { prénom: "Nicolas", nom : "ROUCOU" },
+  { prénom: "Engin", nom : "SENOL" },
+  { prénom: "Serpil", nom : "SEVEN" },
+  { prénom: "Erwin", nom : "MEDELICE" },
+  { prénom: "Kathleen", nom : "HAMMOND" },
+  { prénom: "Andrea", nom : "KEOUA" },
+  { prénom: "Helena", nom : "DUDEK" },
+  { prénom: "France", nom : "GASTINEAU" },
+  { prénom: "Amine", nom : "BENOTMANE" },
+  { prénom: "Sarah", nom : "CHEIKH" },
+  { prénom: "Charles Henry", nom : "NKOSI" },
+  { prénom: "Stéphane", nom : "JONNERY" },
+  { prénom: "Nisar", nom : "BOURKISS" },
+  { prénom: "Abirami", nom : "MARIMUTHU" },
+  { prénom: "Koen", nom : "VAN DER HAEGEN" },
 
 ];
 
 function renderCollabs() {
   const container = document.getElementById('collab-list');
   container.innerHTML = '';
-  collaborateurs.forEach((c, index) => {
+  collaborateurs.sort((a, b) => a.prenom.localeCompare(b.prenom)).forEach((c, index) => {
     container.innerHTML += `
       <div class="collab-chip">
         <span>${c.prenom} ${c.nom}</span>
-        <button onclick="supprimerCollab(${index})" style="background:none; border:none; color:#ccc; cursor:pointer;">✕</button>
+        <button onclick="supprimerCollab(${index})" style="background:none; border:none; color:#ddd; cursor:pointer; font-size:1.1rem;">×</button>
       </div>`;
   });
 }
 
 function ajouterCollab() {
-  const p = document.getElementById('in-prenom').value;
-  const n = document.getElementById('in-nom').value;
-  const d = document.getElementById('in-dept').value;
+  const p = document.getElementById('in-prenom').value.trim();
+  const n = document.getElementById('in-nom').value.trim();
   if(!p || !n) return;
-  collaborateurs.push({ prenom: p, nom: n, dept: d });
+  collaborateurs.push({ prenom: p, nom: n });
   renderCollabs();
   document.getElementById('in-prenom').value = '';
   document.getElementById('in-nom').value = '';
-  document.getElementById('in-dept').value = '';
 }
 
 function supprimerCollab(index) {
@@ -366,18 +365,21 @@ function supprimerCollab(index) {
   renderCollabs();
 }
 
+// --- TIRAGE AU SORT ---
 function lancerTirage() {
-  if(collaborateurs.length === 0) return alert("Ajoute des collègues d'abord !");
+  if(collaborateurs.length === 0) {
+    alert("La liste est vide ! Ajoutez des noms en bas de page.");
+    return;
+  }
   
-  const élu = collaborateurs[Math.floor(Math.random() * collaborateurs.length)];
+  const elu = collaborateurs[Math.floor(Math.random() * collaborateurs.length)];
   
   document.getElementById('result-section').style.display = 'block';
-  document.getElementById('res-name').textContent = élu.prenom + " " + élu.nom;
-  document.getElementById('res-dept').textContent = élu.dept;
+  document.getElementById('res-name').textContent = elu.prenom + " " + elu.nom;
   
-  const message = `Salut ${élu.prenom},
+  const message = `Salut ${elu.prenom},
 
-Je viens de rejoindre l'aventure FBD ! 🚀
+Je m'appelle [Ton Prénom] et je viens de rejoindre l'aventure FBD ! 🚀
 
 La Roulette Café a tourné et elle nous a tirés au sort pour faire connaissance. L'idée est simplement de partager un petit moment sympa (15-20 min), autour d'un café ou même d'un appel, pour que tu puisses me parler un peu de ton quotidien ici.
 
@@ -388,15 +390,18 @@ Dis-moi quand tu aurais un petit créneau de libre dans les jours à venir ?
 À très vite !`;
 
   document.getElementById('msg-text').textContent = message;
+  
+  // Scroll automatique vers le résultat pour mobile
+  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
 }
 
 function copyMsg() {
   const text = document.getElementById('msg-text').textContent;
   navigator.clipboard.writeText(text);
   const t = document.getElementById('toast');
-  t.textContent = "Message copié !";
+  t.textContent = "Invitation copiée ! ✓";
   t.style.display = "block";
-  setTimeout(() => t.style.display = "none", 2000);
+  setTimeout(() => t.style.display = "none", 2500);
 }
 
 renderCollabs();
